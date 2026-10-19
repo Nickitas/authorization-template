@@ -60,8 +60,8 @@ importers:
         specifier: ^0.15.1
         version: 0.15.1
       connect-redis:
-        specifier: ^10.0.0
-        version: 10.0.0(express-session@1.19.0)(redis@6.3.0)
+        specifier: ^7.1.0
+        version: 7.1.0(express-session@1.19.0)
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -1130,42 +1130,6 @@ packages:
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
 
-  '@redis/bloom@6.3.0':
-    resolution: {integrity: sha512-NQ5poYpZr0jv6zazN1cy6JY5kIipKFZ3R9GTL4kOUTX3a9YAfY29U8bsE4lWhVQEM+G4V0BXVC57mubIdDijeA==}
-    engines: {node: '>= 20.0.0'}
-    peerDependencies:
-      '@redis/client': ^6.3.0
-
-  '@redis/client@6.3.0':
-    resolution: {integrity: sha512-fHrjwGCBvAANGi+TuRuwKi83sIOzgHr8eh+Uf48w3fSX7Hhrz174NrWqfJhAC2vnN0d/tfaZpdr6+o6JC3QHwg==}
-    engines: {node: '>= 20.0.0'}
-    peerDependencies:
-      '@node-rs/xxhash': ^1.1.0
-      '@opentelemetry/api': '>=1 <2'
-    peerDependenciesMeta:
-      '@node-rs/xxhash':
-        optional: true
-      '@opentelemetry/api':
-        optional: true
-
-  '@redis/json@6.3.0':
-    resolution: {integrity: sha512-yt6vRfPBXtW/3qm53cF81TSQpLMjWdW4/2E9WQ2GgbvsKkuCKCFQIcMiKlil1ZMnezK+IQuS795xKU5psbaegw==}
-    engines: {node: '>= 20.0.0'}
-    peerDependencies:
-      '@redis/client': ^6.3.0
-
-  '@redis/search@6.3.0':
-    resolution: {integrity: sha512-RPXAZmKjZZG7Tm7m1w9keFdXzbL91PiSHQBfQRe9xwW40jNsTRbG0FwhIz4QlHPU4gKDAsCy8IQHj4yZl4H9rw==}
-    engines: {node: '>= 20.0.0'}
-    peerDependencies:
-      '@redis/client': ^6.3.0
-
-  '@redis/time-series@6.3.0':
-    resolution: {integrity: sha512-+fJOB8mN1z5WRakCJNh5lVdz1KqvHGSOistsKeitD24QsCtPwyRQXWC0iq6T/i/ubLE/YcguZqPm8F598MKk4A==}
-    engines: {node: '>= 20.0.0'}
-    peerDependencies:
-      '@redis/client': ^6.3.0
-
   '@rolldown/binding-android-arm-eabi@1.2.14':
     resolution: {integrity: sha512-aWR+XKH9+rW7m5fWq/5360J3mHycrx/o6xZM2DQFdJnTMdyP7/WzxPjhtLbVWdKo2y612/4U1bWqb3HQhiF7vg==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -1718,12 +1682,11 @@ packages:
   confbox@0.3.1:
     resolution: {integrity: sha512-cKUSoKa8YxFZZSmraVi7onONx3amu77ngK3kGpsYHDH7drPwCRkQE1RYMPlLRrMtnciRj274XNRxcHxnKmDSnA==}
 
-  connect-redis@10.0.0:
-    resolution: {integrity: sha512-x6EotIY20pvocamMtcOsgxFzYufAMfipE+rjWa0cZMeSx+3K0yoHi4Nv4sfMlgF+Z5KnUbMFxyCx9pDZP39p0Q==}
-    engines: {node: '>=22'}
+  connect-redis@7.1.0:
+    resolution: {integrity: sha512-UaqO1EirWjON2ENsyau7N5lbkrdYBpS6mYlXSeff/OYXsd6EGZ+SXSmNPoljL2PSua8fgjAEaldSA73PMZQ9Eg==}
+    engines: {node: '>=16'}
     peerDependencies:
       express-session: '>=1'
-      redis: '>=5'
 
   content-disposition@1.1.0:
     resolution: {integrity: sha512-5jRCH9Z/+DRP7rkvY83B+yGIGX96OYdJmzngqnw2SBSxqCFPd0w2km3s5iawpGX8krnwSGmF0FW5Nhr0Hfai3g==}
@@ -2769,10 +2732,6 @@ packages:
   redis-errors@1.2.0:
     resolution: {integrity: sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==}
     engines: {node: '>=4'}
-
-  redis@6.3.0:
-    resolution: {integrity: sha512-XFQbPie1lGpKeUZ8ySYY43yLnQy/iIQtHNvIr/1XdaABpb96rUSdm3Mfl+98FEVbv9ZJIzINMno5s0Nh8E5LEw==}
-    engines: {node: '>= 20.0.0'}
 
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
@@ -4009,24 +3968,6 @@ snapshots:
     dependencies:
       react: 19.3.1
 
-  '@redis/bloom@6.3.0(@redis/client@6.3.0)':
-    dependencies:
-      '@redis/client': 6.3.0
-
-  '@redis/client@6.3.0': {}
-
-  '@redis/json@6.3.0(@redis/client@6.3.0)':
-    dependencies:
-      '@redis/client': 6.3.0
-
-  '@redis/search@6.3.0(@redis/client@6.3.0)':
-    dependencies:
-      '@redis/client': 6.3.0
-
-  '@redis/time-series@6.3.0(@redis/client@6.3.0)':
-    dependencies:
-      '@redis/client': 6.3.0
-
   '@rolldown/binding-android-arm-eabi@1.2.14':
     optional: true
 
@@ -4593,10 +4534,9 @@ snapshots:
 
   confbox@0.3.1: {}
 
-  connect-redis@10.0.0(express-session@1.19.0)(redis@6.3.0):
+  connect-redis@7.1.0(express-session@1.19.0):
     dependencies:
       express-session: 1.19.0
-      redis: 6.3.0
 
   content-disposition@1.1.0: {}
 
@@ -5568,17 +5508,6 @@ snapshots:
   readdirp@5.1.1: {}
 
   redis-errors@1.2.0: {}
-
-  redis@6.3.0:
-    dependencies:
-      '@redis/bloom': 6.3.0(@redis/client@6.3.0)
-      '@redis/client': 6.3.0
-      '@redis/json': 6.3.0(@redis/client@6.3.0)
-      '@redis/search': 6.3.0(@redis/client@6.3.0)
-      '@redis/time-series': 6.3.0(@redis/client@6.3.0)
-    transitivePeerDependencies:
-      - '@node-rs/xxhash'
-      - '@opentelemetry/api'
 
   reflect-metadata@0.2.2: {}
 

@@ -1,12 +1,18 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@/user/user.service.js';
 import { AuthMethod, User } from '@prisma/__generated__/index.js';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { RegisterDto } from './dto/register.dto.js';
+import { LoginDto } from './dto/login.dto.js';
+import { verify } from 'argon2';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-    public constructor(private readonly userService: UserService) { }
+    public constructor(
+        private readonly userService: UserService,
+        private readonly configService: ConfigService
+    ) { }
 
     public async register(req: Request, dto: RegisterDto) {
         const isExists = await this.userService.findByEmail(dto.email);
@@ -29,9 +35,40 @@ export class AuthService {
         return this.saveSession(req, newUser);
     }
 
-    public async login() { }
+    public async login(req: Request, dto: LoginDto) {
+        const user = await this.userService.findByEmail(dto.email);
 
-    public async logout() { }
+        if (!user || !user.password) {
+            throw new NotFoundException(
+                'Пользователь не найден. Проверьте введенные данные.'
+            );
+        }
+
+        const isValidPassword = await verify(user.password, dto.password);
+
+        if (!isValidPassword) {
+            throw new UnauthorizedException(
+                'Неверный пароль. Попробуйте еще раз или восстановите пароль, если забыли его.'
+            );
+        }
+
+        return this.saveSession(req, user);
+    }
+
+    public async logout(req: Request, res: Response): Promise<void> {
+        return new Promise((resolve, reject) => {
+            req.session.destroy(err => {
+                if (err) {
+                    return reject(
+                        new InternalServerErrorException('Не удалось завершить сессию. Возможно, возникла проблема с сервером млм сессия уже была завершена.')
+                    );
+                }
+
+                res.clearCookie(this.configService.getOrThrow<string>('SESSION_NAME'));
+                resolve();
+            })
+        })
+    }
 
     private async saveSession(req: Request, user: User) {
         // console.log(`Session saved. User: ${user}`);

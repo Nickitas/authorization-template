@@ -10,7 +10,7 @@ expand(dotenv.config());
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { Redis } from 'ioredis';
-import { RedisStore } from 'connect-redis';
+import RedisStore from 'connect-redis';
 import { ms, StringValue } from './libs/common/utils/ms.util.js';
 import { parseBool } from './libs/common/utils/parse-bool.util.js';
 

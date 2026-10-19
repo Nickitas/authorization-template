@@ -6,7 +6,7 @@ export class RegisterDto {
     @IsNotEmpty({ message: 'Имя обязательно.' })
     name: string;
 
-    @IsString({ message: 'Email должно быть строкой.' })
+    @IsString({ message: 'Email должен быть строкой.' })
     @IsEmail({}, { message: 'Некорректный формат email.' })
     @IsNotEmpty({ message: 'Email обязателен.' })
     email: string;
