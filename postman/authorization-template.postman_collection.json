@@ -85,6 +85,26 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "auth/oauth/connect/:provider",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/auth/oauth/connect/yandex",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "oauth",
+                "connect",
+                "yandex"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },

@@ -39,7 +39,7 @@ model Account {
 
     refreshToken String? @map("refresh_token")
     accessToken  String? @map("access_token")
-    expiresAt    Int     @map("expires_at")
+    expiresAt    Int?    @map("expires_at")
 
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
@@ -57,6 +57,8 @@ model Token {
     token     String    @unique
     type      TokenType
     expiresIn DateTime  @map("expires_in")
+
+    createdAt DateTime @default(now()) @map("created_at")
 
     @@map("tokens")
 }
