@@ -11,6 +11,9 @@ import { AuthService } from './auth.service.js';
 import { AuthController } from './auth.controller.js';
 import { ProviderModule } from './provider/provider.module.js';
 import { getProvidersConfig } from '@/config/providers.comfig.js';
+import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module.js';
+import { MailService } from '@/libs/mail/mail.service.js';
+import { SessionModule } from './session/session.module.js';
 
 @Module({
   imports: [
@@ -23,9 +26,12 @@ import { getProvidersConfig } from '@/config/providers.comfig.js';
       imports: [ConfigModule],
       useFactory: getRecaptchaConfig,
       inject: [ConfigService]
-    })
+    }),
+    EmailConfirmationModule,
+    SessionModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService],
+  providers: [AuthService, UserService, MailService],
+  exports: [AuthService]
 })
 export class AuthModule { }

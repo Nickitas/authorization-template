@@ -1,0 +1,20 @@
+info:
+  name: by-id
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/users/by-id/:id"
+  params:
+    - name: id
+      value: 90576cb5-954f-4afb-8347-9a692c287de2
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

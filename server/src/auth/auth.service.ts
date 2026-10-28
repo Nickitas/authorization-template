@@ -1,21 +1,23 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@/user/user.service.js';
 import { AuthMethod, User } from '@prisma/__generated__/index.js';
 import { Request, Response } from 'express';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { verify } from 'argon2';
-import { ConfigService } from '@nestjs/config';
 import { ProviderService } from './provider/provider.service.js';
 import { PrismaService } from '@/prisma/prisma.service.js';
+import { EmailConfirmationService } from './email-confirmation/email-confirmation.service.js';
+import { SessionService } from './session/session.service.js';
 
 @Injectable()
 export class AuthService {
     public constructor(
         private readonly prismaService: PrismaService,
         private readonly userService: UserService,
-        private readonly configService: ConfigService,
         private readonly providerService: ProviderService,
+        private readonly emailConfirmationService: EmailConfirmationService,
+        private readonly sessionService: SessionService,
     ) { }
 
     public async register(req: Request, dto: RegisterDto) {
@@ -36,7 +38,11 @@ export class AuthService {
             false
         );
 
-        return this.saveSession(req, newUser);
+        await this.emailConfirmationService.sendVerificationToken(newUser)
+
+        return {
+            message: 'Вы успешно зарегистрировались. Пожалуйста, подтвердите ваш email. Сообщение было отправлено на ваш почтовый адрес.'
+        };
     }
 
     public async login(req: Request, dto: LoginDto) {
@@ -54,6 +60,11 @@ export class AuthService {
             throw new UnauthorizedException(
                 'Неверный пароль. Попробуйте еще раз или восстановите пароль, если забыли его.'
             );
+        }
+
+        if (!user.isVerified) {
+            await this.emailConfirmationService.sendVerificationToken(user);
+            throw new UnauthorizedException('Email не подтвержден. Проверьте почту и подтвердит адрес.')
         }
 
         return this.saveSession(req, user);
@@ -114,37 +125,10 @@ export class AuthService {
     }
 
     public async logout(req: Request, res: Response): Promise<void> {
-        return new Promise((resolve, reject) => {
-            req.session.destroy(err => {
-                if (err) {
-                    return reject(
-                        new InternalServerErrorException('Не удалось завершить сессию. Возможно, возникла проблема с сервером млм сессия уже была завершена.')
-                    );
-                }
-
-                res.clearCookie(this.configService.getOrThrow<string>('SESSION_NAME'));
-                resolve();
-            })
-        })
+        return this.sessionService.destroy(req, res);
     }
 
-    private async saveSession(req: Request, user: User) {
-        // console.log(`Session saved. User: ${user}`);
-
-        return new Promise((resolve, reject) => {
-            req.session.userId = user.id;
-
-            req.session.save(err => {
-                if (err) {
-                    return reject(
-                        new InternalServerErrorException('Не удалось сохранить сессию. Проверьте, правильно ли настроены параметры сессии.')
-                    )
-                }
-
-                resolve({
-                    user
-                })
-            })
-        })
+    public saveSession(req: Request, user: User) {
+        return this.sessionService.save(req, user);
     }
 }
