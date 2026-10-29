@@ -15,8 +15,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
+# OS files
 .DS_Store
+Thumbs.db
 
 # Tests
 /coverage

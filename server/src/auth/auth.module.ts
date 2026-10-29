@@ -14,6 +14,7 @@ import { getProvidersConfig } from '@/config/providers.comfig.js';
 import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module.js';
 import { MailService } from '@/libs/mail/mail.service.js';
 import { SessionModule } from './session/session.module.js';
+import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service.js';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { SessionModule } from './session/session.module.js';
     SessionModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, MailService],
+  providers: [AuthService, UserService, MailService, TwoFactorAuthService],
   exports: [AuthService]
 })
 export class AuthModule { }

@@ -61,8 +61,8 @@ export class EmailConfirmationService {
         return this.sessionService.save(req, existingUser);
     }
 
-    public async sendVerificationToken(user: User) {
-        const verificationToken = await this.generateVerificationToken(user.email);
+    public async sendVerificationToken(email: string) {
+        const verificationToken = await this.generateVerificationToken(email);
 
         await this.mailService.sendConfirmationEmail(
             verificationToken.email,
@@ -73,7 +73,6 @@ export class EmailConfirmationService {
     }
 
     private async generateVerificationToken(email: string) {
-
         const token = uuidv4();
         const expiresIn = new Date(new Date().getTime() + 3600 * 1000);
 

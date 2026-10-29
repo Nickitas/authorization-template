@@ -9,6 +9,7 @@ import { ProviderService } from './provider/provider.service.js';
 import { PrismaService } from '@/prisma/prisma.service.js';
 import { EmailConfirmationService } from './email-confirmation/email-confirmation.service.js';
 import { SessionService } from './session/session.service.js';
+import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service.js';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
         private readonly providerService: ProviderService,
         private readonly emailConfirmationService: EmailConfirmationService,
         private readonly sessionService: SessionService,
+        private readonly twoFactorAuthService: TwoFactorAuthService,
     ) { }
 
     public async register(req: Request, dto: RegisterDto) {
@@ -38,7 +40,7 @@ export class AuthService {
             false
         );
 
-        await this.emailConfirmationService.sendVerificationToken(newUser)
+        await this.emailConfirmationService.sendVerificationToken(newUser.email);
 
         return {
             message: 'Вы успешно зарегистрировались. Пожалуйста, подтвердите ваш email. Сообщение было отправлено на ваш почтовый адрес.'
@@ -63,8 +65,20 @@ export class AuthService {
         }
 
         if (!user.isVerified) {
-            await this.emailConfirmationService.sendVerificationToken(user);
+            await this.emailConfirmationService.sendVerificationToken(user.email);
             throw new UnauthorizedException('Email не подтвержден. Проверьте почту и подтвердит адрес.')
+        }
+
+        if (user.isTwoFactorEnabled) {
+            if (!dto.code) {
+                await this.twoFactorAuthService.sendTwoFactorToken(user.email);
+
+                return {
+                    message: 'Проверьте почту. Требуется код двухфакторной аутентификации.',
+                }
+            }
+
+            await this.twoFactorAuthService.validateTwoFactorToken(user.email, dto.code);
         }
 
         return this.saveSession(req, user);

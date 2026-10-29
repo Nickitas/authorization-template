@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module.js';
 import { MailModule } from './libs/mail/mail.module.js';
 import { EmailConfirmationModule } from './auth/email-confirmation/email-confirmation.module.js';
 import { PasswordRecoveryModule } from './auth/password-recovery/password-recovery.module.js';
+import { TwoFactorAuthModule } from './auth/two-factor-auth/two-factor-auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -22,7 +23,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     UserModule,
     MailModule,
     EmailConfirmationModule,
-    PasswordRecoveryModule
+    PasswordRecoveryModule,
+    TwoFactorAuthModule
   ],
 })
 export class AppModule { }
