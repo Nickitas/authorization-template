@@ -38,7 +38,7 @@ export class EmailConfirmationService {
         const existingUser = await this.userService.findByEmail(existingToken.email);
 
         if (!existingUser) {
-            throw new NotFoundException('Пользователь с указанным адресом электронной почты не найден. Убедитесь, что ввели правильный email.');
+            throw new NotFoundException('Пользователь не найден. Убедитесь, что email введен верно.');
         }
 
         await this.prismaService.user.update({

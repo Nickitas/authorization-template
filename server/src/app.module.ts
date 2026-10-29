@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { UserModule } from './user/user.module.js';
 import { MailModule } from './libs/mail/mail.module.js';
 import { EmailConfirmationModule } from './auth/email-confirmation/email-confirmation.module.js';
-import { PasswordRecoveryModule } from './password-recovery/password-recovery.module.js';
+import { PasswordRecoveryModule } from './auth/password-recovery/password-recovery.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
