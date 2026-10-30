@@ -1,0 +1,25 @@
+info:
+  name: user/profile
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{BASE_URL}}/users/profile"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Вадим",
+        "email": "v1@mail.ru",
+        "password": "11111111",
+        "isTwoFactorEnabled": true.
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
