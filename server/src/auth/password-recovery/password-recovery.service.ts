@@ -11,6 +11,10 @@ import { NewPasswordDto } from './dto/new-password.dto.js';
 
 
 @Injectable()
+/**
+ * Восстановление пароля: отправка токена сброса на почту и установка
+ * нового пароля по этому токену.
+ */
 export class PasswordRecoveryService {
     public constructor(
         private readonly prismaService: PrismaService,
@@ -18,6 +22,13 @@ export class PasswordRecoveryService {
         private readonly mailService: MailService,
     ) { }
 
+    /**
+     * Отправляет на почту одноразовый токен сброса пароля (действует 1 час).
+     *
+     * @param dto - email пользователя
+     * @returns `true` после отправки письма
+     * @throws {NotFoundException} Если пользователь с таким email не найден
+     */
     public async resetPassword(dto: ResetPasswordDto) {
         const existingUser = await this.userService.findByEmail(dto.email);
 
@@ -35,6 +46,16 @@ export class PasswordRecoveryService {
         return true;
     }
 
+    /**
+     * Устанавливает новый пароль по токену сброса: проверяет токен и срок
+     * действия, хеширует пароль (argon2) и удаляет использованный токен.
+     *
+     * @param dto - новый пароль
+     * @param token - токен сброса из письма
+     * @returns `true` после смены пароля
+     * @throws {NotFoundException} Если токен или пользователь не найдены
+     * @throws {BadRequestException} Если срок действия токена истёк
+     */
     public async newPassword(dto: NewPasswordDto, token: string) {
         const existingToken = await this.prismaService.token.findFirst({
             where: {
@@ -80,6 +101,10 @@ export class PasswordRecoveryService {
         return true;
     }
 
+    /**
+     * Создаёт токен сброса со сроком действия 1 час, предварительно
+     * удаляя прежний токен этого типа.
+     */
     private async generatePasswordResetToken(email: string) {
         const token = uuidv4();
         const expiresIn = new Date(new Date().getTime() + 3600 * 1000);

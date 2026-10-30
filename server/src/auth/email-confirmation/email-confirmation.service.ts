@@ -9,6 +9,10 @@ import { UserService } from '@/user/user.service.js';
 import { SessionService } from '../session/session.service.js';
 
 @Injectable()
+/**
+ * Подтверждение email: отправка токена верификации при регистрации
+ * и активация учётной записи по токену из письма.
+ */
 export class EmailConfirmationService {
     public constructor(
         private readonly prismaService: PrismaService,
@@ -17,6 +21,15 @@ export class EmailConfirmationService {
         private readonly sessionService: SessionService,
     ) { }
 
+    /**
+     * Подтверждает email по токену: помечает пользователя как
+     * isVerified = true, удаляет использованный токен и создаёт сессию.
+     *
+     * @param dto - токен подтверждения из письма
+     * @returns Результат создания сессии
+     * @throws {NotFoundException} Если токен или пользователь не найдены
+     * @throws {BadRequestException} Если срок действия токена истёк
+     */
     public async newVerification(req: Request, dto: ConfirmationDto) {
         const existingToken = await this.prismaService.token.findUnique({
             where: {
@@ -61,6 +74,12 @@ export class EmailConfirmationService {
         return this.sessionService.save(req, existingUser);
     }
 
+    /**
+     * Генерирует и отправляет на почту токен подтверждения (действует 1 час).
+     *
+     * @param email - адрес пользователя
+     * @returns `true` после отправки письма
+     */
     public async sendVerificationToken(email: string) {
         const verificationToken = await this.generateVerificationToken(email);
 
@@ -72,6 +91,10 @@ export class EmailConfirmationService {
         return true;
     }
 
+    /**
+     * Создаёт токен подтверждения со сроком действия 1 час, предварительно
+     * удаляя прежний токен этого типа.
+     */
     private async generateVerificationToken(email: string) {
         const token = uuidv4();
         const expiresIn = new Date(new Date().getTime() + 3600 * 1000);

@@ -12,6 +12,10 @@ import { SessionService } from './session/session.service.js';
 import { TwoFactorAuthService } from './two-factor-auth/two-factor-auth.service.js';
 
 @Injectable()
+/**
+ * Сервис аутентификации: регистрация и вход по email/паролю, 2FA,
+ * OAuth-вход (Google, Yandex) и управление сессиями.
+ */
 export class AuthService {
     public constructor(
         private readonly prismaService: PrismaService,
@@ -22,6 +26,15 @@ export class AuthService {
         private readonly twoFactorAuthService: TwoFactorAuthService,
     ) { }
 
+    /**
+     * Регистрирует пользователя по email и паролю: создаёт неактивированную
+     * учётную запись (isVerified = false) и отправляет письмо с токеном
+     * подтверждения.
+     *
+     * @param dto - данные регистрации: email, пароль и имя
+     * @returns Сообщение с инструкцией подтвердить email
+     * @throws {ConflictException} Если email уже занят
+     */
     public async register(req: Request, dto: RegisterDto) {
         const isExists = await this.userService.findByEmail(dto.email);
 
@@ -47,6 +60,18 @@ export class AuthService {
         };
     }
 
+    /**
+     * Выполняет вход по email и паролю.
+     *
+     * Проверяет пароль (argon2) и подтверждение email. При включённой 2FA
+     * без кода отправляет его на почту (сессия не создаётся), с кодом —
+     * проверяет. Затем создаёт сессию.
+     *
+     * @param dto - данные входа: email, пароль и код 2FA (если запрошен)
+     * @returns Сообщение о необходимости кода 2FA либо результат создания сессии
+     * @throws {NotFoundException} Если пользователь не найден или создан через OAuth
+     * @throws {UnauthorizedException} Если пароль неверный, email не подтверждён или код 2FA недействителен
+     */
     public async login(req: Request, dto: LoginDto) {
         const user = await this.userService.findByEmail(dto.email);
 
@@ -84,6 +109,19 @@ export class AuthService {
         return this.saveSession(req, user);
     }
 
+    /**
+     * Завершает OAuth-вход по коду авторизации.
+     *
+     * Выполняет вход существующего пользователя; если аккаунт провайдера
+     * ещё не привязан — регистрирует пользователя (isVerified = true)
+     * и создаёт привязку.
+     *
+     * @param provider - имя провайдера (`google`, `yandex`)
+     * @param code - код авторизации от провайдера
+     * @returns Результат создания сессии
+     * @throws {NotFoundException} Если провайдер не зарегистрирован
+     * @throws {Error} Если провайдер не сопоставлен с AuthMethod
+     */
     public async extractProfileFromCode(req: Request, provider: string, code: string) {
         const providerInstance = this.providerService.findByService(provider);
 
@@ -138,10 +176,18 @@ export class AuthService {
         return this.saveSession(req, user);
     }
 
+    /**
+     * Выполняет выход, уничтожая текущую сессию и сбрасывая session cookie.
+     */
     public async logout(req: Request, res: Response): Promise<void> {
         return this.sessionService.destroy(req, res);
     }
 
+    /**
+     * Создаёт сессию пользователя и устанавливает session cookie.
+     *
+     * @returns Promise, разрешающийся после сохранения сессии
+     */
     public saveSession(req: Request, user: User) {
         return this.sessionService.save(req, user);
     }

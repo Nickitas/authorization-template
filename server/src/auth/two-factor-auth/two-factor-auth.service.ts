@@ -4,12 +4,26 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { TokenType } from '@prisma/__generated__/index.js';
 
 @Injectable()
+/**
+ * Двухфакторная аутентификация: отправка 6-значного кода на почту
+ * и его проверка при входе.
+ */
 export class TwoFactorAuthService {
     public constructor(
         private readonly prismaService: PrismaService,
         private readonly mailService: MailService,
     ) { }
 
+    /**
+     * Проверяет код 2FA: существование токена, совпадение кода и срок
+     * действия (5 минут), после чего удаляет использованный токен.
+     *
+     * @param email - адрес пользователя
+     * @param code - код из письма
+     * @returns `true`, если код действителен
+     * @throws {NotFoundException} Если токен 2FA не найден
+     * @throws {BadRequestException} Если код неверный или истёк
+     */
     public async validateTwoFactorToken(email: string, code: string) {
         const existingToken = await this.prismaService.token.findFirst({
             where: {
@@ -42,6 +56,12 @@ export class TwoFactorAuthService {
         return true;
     }
 
+    /**
+     * Генерирует и отправляет на почту код 2FA (действует 5 минут).
+     *
+     * @param email - адрес пользователя
+     * @returns `true` после отправки письма
+     */
     public async sendTwoFactorToken(email: string) {
         const twoFactorToken = await this.generateTwoFactorToken(email);
 
@@ -53,6 +73,10 @@ export class TwoFactorAuthService {
         return true;
     }
 
+    /**
+     * Создаёт 6-значный код со сроком действия 5 минут, предварительно
+     * удаляя прежний токен этого типа.
+     */
     private async generateTwoFactorToken(email: string) {
         const token = Math.floor(
             Math.random() * (1_000_000 - 100_000) + 100_000

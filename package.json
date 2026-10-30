@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/mapped-types": "*",
-		"prisma": "8.0.0-rc.27"
-	}
-}
